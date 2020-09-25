@@ -14,18 +14,13 @@ function readJsonFile() {
 
 function check(result) {
 	const expectedErrors = [...arguments].slice(1);
-	try {
-		if (!expectedErrors.length)
-			expect(result.valid).toBeTruthy();
-		else {
-			expect(result.valid).toBeFalsy();
-			const actualErrors = result.errors.map(err => err.stack);
-			expect(actualErrors.length).toBe(expectedErrors.length);
-			expectedErrors.forEach(expect(actualErrors).toContain);
-		}
-	} catch (err) {
-		console.log(result);
-		throw err;
+	if (!expectedErrors.length)
+		expect(result.valid).toBeTruthy();
+	else {
+		expect(result.valid).toBeFalsy();
+		const actualErrors = result.errors.map(err => err.stack);
+		expectedErrors.forEach(expect(actualErrors).toContain);
+		expect(actualErrors.length).toBe(expectedErrors.length);
 	}
 }
 
