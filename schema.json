@@ -1,0 +1,33 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"$id": "testSchema",
+	"title": "Test schema",
+	"description": "Test schema",
+
+	"oneOf": [
+		{"$ref": "#/BodyWithProperty2"},
+		{"$ref": "#/BodyWithProperty3"}
+	],
+	
+	"BodyWithProperty2": {
+		"type": "object",
+		"properties": {
+			"p1": {"$ref": "#/NonEmptyString"},
+			"p2": {"$ref": "#/NonEmptyString"},
+			"p4": {"$ref": "#/NonEmptyString"}
+		},
+		"required": ["p1", "p2"]
+	},
+	
+	"BodyWithProperty3": {
+		"type": "object",
+		"properties": {
+			"p1": {"$ref": "#/NonEmptyString"},
+			"p3": {"$ref": "#/NonEmptyString"},
+			"p4": {"$ref": "#/NonEmptyString"}
+		},
+		"required": ["p1", "p3"]
+	},
+	
+	"NonEmptyString": {"type": "string", "minLength": 1}
+}
