@@ -3,6 +3,10 @@ const path = require('path');
 const jsonSchema = readJsonFile("schema.json");
 const validator = new (require('jsonschema').Validator)();
 
+function validate(input) {
+	return validator.validate(input, jsonSchema);
+}
+
 function readJsonFile() {
 	const fileName = path.resolve(__dirname, ...arguments);
 	return JSON.parse(fs.readFileSync(fileName, 'utf8'));
@@ -15,7 +19,11 @@ function check(result) {
 			expect(result.valid).toBeTruthy();
 		else {
 			expect(result.valid).toBeFalsy();
-			expect(result.errors.map(err => err.stack)).toStrictEqual(expectedErrors);
+			const actualErrors = result.errors.map(err => err.stack);
+			expect(actualErrors.length).toBe(expectedErrors.length);
+			expectedErrors.forEach(err => {
+				expect(actualErrors).toContain(err);
+			});
 		}
 	} catch (err) {
 		console.log(result);
@@ -26,11 +34,13 @@ function check(result) {
 describe("Test validation", () => {
 	test("No properties", () => {
 		const input = {};
-		const result = validator.validate(input, jsonSchema);
+		const result = validate(input, jsonSchema);
 		check(result,
-			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>'
-			// Should also include messages from validation of the two alternatives, ie two
-			// instances of "p1 is missing" and one each of "p2 is missing" and "p3 is missing".
+			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>',
+			'instance requires property "p1"',
+			'instance requires property "p2"',
+			'instance requires property "p1"',
+			'instance requires property "p3"'
 		);
 	});
 
@@ -38,11 +48,11 @@ describe("Test validation", () => {
 		const input = {
 			p1: "a"
 		};
-		const result = validator.validate(input, jsonSchema);
+		const result = validate(input, jsonSchema);
 		check(result,
-			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>'
-			// Should also include messages from validation of the two alternatives, ie 
-			// "p2 is missing" and "p3 is missing".
+			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>',
+			'instance requires property "p2"',
+			'instance requires property "p3"'
 		);
 	});
 
@@ -51,11 +61,11 @@ describe("Test validation", () => {
 			p1: "a",
 			p2: ""
 		};
-		const result = validator.validate(input, jsonSchema);
+		const result = validate(input, jsonSchema);
 		check(result,
-			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>'
-			// Should also include messages from validation of the two alternatives, ie 
-			// "p2 is too short" and "p3 is missing".
+			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>',
+			'instance.p2 does not meet minimum property length of 1',
+			'instance requires property "p3"'
 		);
 	});
 
@@ -64,7 +74,7 @@ describe("Test validation", () => {
 			p1: "a",
 			p2: "a"
 		};
-		const result = validator.validate(input, jsonSchema);
+		const result = validate(input, jsonSchema);
 		check(result);
 	});
 
@@ -74,7 +84,7 @@ describe("Test validation", () => {
 			p2: "a",
 			p4: "a"
 		};
-		const result = validator.validate(input, jsonSchema);
+		const result = validate(input, jsonSchema);
 		check(result);
 	});
 
@@ -83,11 +93,11 @@ describe("Test validation", () => {
 			p1: "a",
 			p3: ""
 		};
-		const result = validator.validate(input, jsonSchema);
+		const result = validate(input, jsonSchema);
 		check(result,
-			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>'
-			// Should also include messages from validation of the two alternatives, ie 
-			// "p2 is missing" and "p3 is too short".
+			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>',
+			'instance requires property "p2"',
+			'instance.p3 does not meet minimum property length of 1'
 		);
 	});
 
@@ -96,7 +106,7 @@ describe("Test validation", () => {
 			p1: "a",
 			p3: "a"
 		};
-		const result = validator.validate(input, jsonSchema);
+		const result = validate(input, jsonSchema);
 		check(result);
 	});
 
@@ -106,7 +116,7 @@ describe("Test validation", () => {
 			p2: "a",
 			p4: "a"
 		};
-		const result = validator.validate(input, jsonSchema);
+		const result = validate(input, jsonSchema);
 		check(result);
 	});
 
@@ -117,9 +127,9 @@ describe("Test validation", () => {
 			p3: "a",
 			p4: "a"
 		};
-		const result = validator.validate(input, jsonSchema);
+		const result = validate(input, jsonSchema);
 		check(result,
-				'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>'
-			);
+			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>'
+		);
 	});
 });

@@ -45,7 +45,10 @@ useful to someone who doesn't have access to the schema.
 
 ## Tests
 
-I have included some Jest tests to illustrate the scenario. To run this, in the root directory of the project issue the following commands:
+[Some Jest tests](schema.test.js) are included to illustrate the scenario. 
+To run these, in the root directory of the project issue the following commands:
 * `npm ci` (only needs to be done the first time)
 * `npm test`
 
+Each test specifies the error messages that I think should be issued, so those where the errors
+from the nested schema validation are not thrown fail. 
