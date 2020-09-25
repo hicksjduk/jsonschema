@@ -21,9 +21,7 @@ function check(result) {
 			expect(result.valid).toBeFalsy();
 			const actualErrors = result.errors.map(err => err.stack);
 			expect(actualErrors.length).toBe(expectedErrors.length);
-			expectedErrors.forEach(err => {
-				expect(actualErrors).toContain(err);
-			});
+			expectedErrors.forEach(expect(actualErrors).toContain);
 		}
 	} catch (err) {
 		console.log(result);
