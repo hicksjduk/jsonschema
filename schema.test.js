@@ -4,7 +4,7 @@ const jsonSchema = readJsonFile("schema.json");
 const validator = new (require('jsonschema').Validator)();
 
 function validate(input) {
-	return validator.validate(input, jsonSchema);
+	return validator.validate(input, jsonSchema, {nestedErrors: true});
 }
 
 function readJsonFile() {
@@ -57,7 +57,7 @@ describe("Test validation", () => {
 		const result = validate(input, jsonSchema);
 		check(result,
 			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>',
-			'instance.p2 does not meet minimum property length of 1',
+			'instance.p2 does not meet minimum length of 1',
 			'instance requires property "p3"'
 		);
 	});
@@ -90,7 +90,7 @@ describe("Test validation", () => {
 		check(result,
 			'instance is not exactly one from <#/BodyWithProperty2>,<#/BodyWithProperty3>',
 			'instance requires property "p2"',
-			'instance.p3 does not meet minimum property length of 1'
+			'instance.p3 does not meet minimum length of 1'
 		);
 	});
 

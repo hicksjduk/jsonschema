@@ -1,11 +1,27 @@
 # Schema validation test
 
 This project provides a testcase which demonstrates a shortcoming in the error messages
-issued by the `jsonschema` project when the schema being used contains a "oneOf"
+issued by the `jsonschema` library when the schema being used contains a "oneOf"
 specification. If validation fails in both sub-schemas, the only error issued is that
 the validated document is not exactly one from the possible alternatives. I think that
 that message is fine, but the errors found when validating against the alternatives should
 also be included.
+
+### Update
+
+I raised [an issue on the library](https://github.com/tdegrunt/jsonschema/issues/309) about this, 
+and it turned out that the desired behaviour can be switched on by setting the `nestedErrors` 
+option. This is done by specifying, as the third parameter to the validator after the input object
+and the schema, an object in which the property `nestedErrors` exists and has a truthy value. 
+For example:
+
+```javascript
+validator.validate(input, jsonSchema, {nestedErrors: true})
+```
+The tests in this project have been updated accordingly, and they all pass.
+
+The issue has been updated to reflect that the desired behaviour is available, but the documentation
+of the option is lacking.
 
 ## Scenario description
 
@@ -22,7 +38,8 @@ combinations:
 * `BodyWithProperty3`, which requires p1 and p3, and also allows p4.
 
 Note, however, that the sub-schemas allow additional properties; so a document that contains all
-of p1, p2 and p3 will pass validation against both sub-schemas but fail because it should pass against only one.
+of p1, p2 and p3 will pass validation against both sub-schemas but fail because it should pass
+against only one.
 
 Then the root element of the document is described using a "oneOf" element that references the
 two possible sub-schemas.
