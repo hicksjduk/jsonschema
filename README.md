@@ -30,6 +30,7 @@ properties p1, p2, p3 and p4:
 * p1 must be present
 * Either p2 or p3 must be present
 * p4 may or may not be present
+
 All four properties are strings, and may not be blank.
 
 This is described in [the schema file](schema.json) by defining two sub-schemas for the valid
@@ -37,12 +38,12 @@ combinations:
 * `BodyWithProperty2`, which requires p1 and p2, and also allows p4.
 * `BodyWithProperty3`, which requires p1 and p3, and also allows p4.
 
-Note, however, that the sub-schemas allow additional properties; so a document that contains all
-of p1, p2 and p3 will pass validation against both sub-schemas but fail because it should pass
-against only one.
-
 Then the root element of the document is described using a "oneOf" element that references the
 two possible sub-schemas.
+
+Note, however, that each sub-schema allows additional properties that are not specified in that 
+schema; so a document that contains all of p1, p2 and p3 will pass validation against both 
+sub-schemas but fail because it should pass against only one.
 
 I suspect that there may be other ways to represent this, but this seems to me to be the most
 elegant and readable way to do it.
